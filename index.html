@@ -2,148 +2,134 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Budget Calculator App</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST Calculator</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
 body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(120deg, #00c6ff, #0072ff);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
+  margin: 0;
 }
-.app-container {
-  width: 450px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-  color: #fff;
+.calculator {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+  width: 350px;
   text-align: center;
 }
-.app-container h1 {
-  font-size: 24px;
+h2 {
+  color: #0072ff;
   margin-bottom: 20px;
-  letter-spacing: 1px;
-  font-weight: 600;
 }
-.input-group {
-  margin: 15px 0;
+label {
+  display: block;
+  text-align: left;
+  margin: 10px 0 5px;
+  font-weight: 500;
 }
-input[type="text"] {
+input, select {
+  width: 100%;
   padding: 10px;
-  border: none;
-  border-radius: 10px;
-  outline: none;
-  width: 80px;
-  text-align: center;
-  margin: 5px;
-  font-size: 14px;
-  font-weight: bold;
-}
-#amount {
-  width: 200px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 button {
-  margin-top: 15px;
-  background: linear-gradient(135deg, #ff6a00, #ee0979);
-  border: none;
-  color: white;
-  padding: 12px 20px;
+  width: 100%;
+  padding: 12px;
   font-size: 16px;
-  font-weight: bold;
-  border-radius: 30px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.3s;
+  margin-top: 10px;
+  transition: 0.3s;
 }
-button:hover {
-  transform: scale(1.05);
-  background: linear-gradient(135deg, #ee0979, #ff6a00);
+#calculate {
+  background: #0072ff;
+  color: #fff;
 }
-.result-container {
-  margin-top: 25px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+#calculate:hover {
+  background: #0059cc;
+}
+#reset {
+  background: #ff4d4d;
+  color: #fff;
+}
+#reset:hover {
+  background: #e60000;
 }
 .result-box {
+  margin-top: 20px;
   padding: 15px;
-  border-radius: 15px;
-  font-size: 16px;
-  font-weight: 600;
-  color: white;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: #f2f9ff;
+  border-radius: 8px;
+  text-align: left;
 }
-.room { background: #4facfe; }
-.accessories { background: #43e97b; }
-.emergency { background: #fa709a; }
-.saving { background: #fbc531; color: black; }
+.result-box p {
+  margin: 8px 0;
+  font-size: 16px;
+}
 </style>
 </head>
 <body>
-<div class="app-container">
-  <h1>💰 Budget Calculator</h1>
-  <div class="input-group">
-    <p>Enter Amount to Manage:</p>
-    <input type="text" id="amount" placeholder="Enter Amount">
-  </div>
-  <div class="input-group">
-    <p>Enter Percentages:</p>
-    <input type="text" id="rent" placeholder="Room Rent %">
-    <input type="text" id="accessories" placeholder="Accessories %">
-    <input type="text" id="emergency" placeholder="Emergency %">
-    <input type="text" id="saving" placeholder="Saving %">
-  </div>
-  <button id="calculate">Evaluate My Money</button>
-  <div class="result-container">
-    <div class="result-box room" id="roomResult">Room Rent Rs.0.00</div>
-    <div class="result-box accessories" id="accessoriesResult">Accessories Rs.0.00</div>
-    <div class="result-box emergency" id="emergencyResult">Emergency Rs.0.00</div>
-    <div class="result-box saving" id="savingResult">Saving Rs.0.00</div>
+<div class="calculator">
+  <h2>GST Calculator</h2>
+
+  <label for="amount">Enter Amount:</label>
+  <input type="number" id="amount" placeholder="e.g. 20000">
+
+  <label for="gst">Select GST (%):</label>
+  <select id="gst">
+    <option value="3">3%</option>
+    <option value="5">5%</option>
+    <option value="12">12%</option>
+    <option value="18">18%</option>
+    <option value="28">28%</option>
+  </select>
+
+  <button id="calculate">Calculate</button>
+  <button id="reset">Reset</button>
+
+  <div class="result-box" id="results" style="display:none;">
+    <p id="actualAmount"></p>
+    <p id="gstAmount"></p>
+    <p id="totalAmount"></p>
   </div>
 </div>
 
 <script>
-$(document).ready(function () {
-  // Load saved data from local storage
-  if (localStorage.getItem("budgetData")) {
-    const saved = JSON.parse(localStorage.getItem("budgetData"));
-    $("#amount").val(saved.amount);
-    $("#rent").val(saved.rent);
-    $("#accessories").val(saved.accessories);
-    $("#emergency").val(saved.emergency);
-    $("#saving").val(saved.saving);
-  }
+$(document).ready(function(){
+  // Calculate button
+  $("#calculate").click(function(){
+    let amount = parseFloat($("#amount").val());
+    let gstRate = parseFloat($("#gst").val());
 
-  $("#calculate").click(function () {
-    var amount = parseFloat($("#amount").val());
-    var rent = parseFloat($("#rent").val());
-    var accessories = parseFloat($("#accessories").val());
-    var emergency = parseFloat($("#emergency").val());
-    var saving = parseFloat($("#saving").val());
-    var totalPercent = rent + accessories + emergency + saving;
-
-    if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid amount.");
-      return;
-    }
-    if (totalPercent !== 100) {
-      alert("The total percentage must equal 100%.");
+    if(isNaN(amount) || amount <= 0){
+      alert("⚠️ Please enter a valid amount.");
       return;
     }
 
-    // Save inputs to local storage
-    const budgetData = { amount, rent, accessories, emergency, saving };
-    localStorage.setItem("budgetData", JSON.stringify(budgetData));
+    let gstAmount = (amount * gstRate) / 100;
+    let totalAmount = amount + gstAmount;
 
-    $("#roomResult").text("Room Rent Rs." + (amount * rent / 100).toFixed(2));
-    $("#accessoriesResult").text("Accessories Rs." + (amount * accessories / 100).toFixed(2));
-    $("#emergencyResult").text("Emergency Rs." + (amount * emergency / 100).toFixed(2));
-    $("#savingResult").text("Saving Rs." + (amount * saving / 100).toFixed(2));
+    $("#actualAmount").html("Actual Amount: ₹" + amount.toFixed(2));
+    $("#gstAmount").html("GST ("+gstRate+"%): ₹" + gstAmount.toFixed(2));
+    $("#totalAmount").html("Total Amount: ₹" + totalAmount.toFixed(2));
+    $("#results").fadeIn();
+  });
+
+  // Reset button
+  $("#reset").click(function(){
+    $("#amount").val("");
+    $("#gst").val("3");
+    $("#results").hide();
   });
 });
 </script>
