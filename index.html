@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Budget Calculator App</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.app-container {
+  width: 450px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  text-align: center;
+}
+.app-container h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+.input-group {
+  margin: 15px 0;
+}
+input[type="text"] {
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  width: 80px;
+  text-align: center;
+  margin: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+#amount {
+  width: 200px;
+}
+button {
+  margin-top: 15px;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ee0979, #ff6a00);
+}
+.result-container {
+  margin-top: 25px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.result-box {
+  padding: 15px;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+.room { background: #4facfe; }
+.accessories { background: #43e97b; }
+.emergency { background: #fa709a; }
+.saving { background: #fbc531; color: black; }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <h1>💰 Budget Calculator</h1>
+  <div class="input-group">
+    <p>Enter Amount to Manage:</p>
+    <input type="text" id="amount" placeholder="Enter Amount">
+  </div>
+  <div class="input-group">
+    <p>Enter Percentages:</p>
+    <input type="text" id="rent" placeholder="Room Rent %">
+    <input type="text" id="accessories" placeholder="Accessories %">
+    <input type="text" id="emergency" placeholder="Emergency %">
+    <input type="text" id="saving" placeholder="Saving %">
+  </div>
+  <button id="calculate">Evaluate My Money</button>
+  <div class="result-container">
+    <div class="result-box room" id="roomResult">Room Rent Rs.0.00</div>
+    <div class="result-box accessories" id="accessoriesResult">Accessories Rs.0.00</div>
+    <div class="result-box emergency" id="emergencyResult">Emergency Rs.0.00</div>
+    <div class="result-box saving" id="savingResult">Saving Rs.0.00</div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+  // Load saved data from local storage
+  if (localStorage.getItem("budgetData")) {
+    const saved = JSON.parse(localStorage.getItem("budgetData"));
+    $("#amount").val(saved.amount);
+    $("#rent").val(saved.rent);
+    $("#accessories").val(saved.accessories);
+    $("#emergency").val(saved.emergency);
+    $("#saving").val(saved.saving);
+  }
+
+  $("#calculate").click(function () {
+    var amount = parseFloat($("#amount").val());
+    var rent = parseFloat($("#rent").val());
+    var accessories = parseFloat($("#accessories").val());
+    var emergency = parseFloat($("#emergency").val());
+    var saving = parseFloat($("#saving").val());
+    var totalPercent = rent + accessories + emergency + saving;
+
+    if (isNaN(amount) || amount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+    if (totalPercent !== 100) {
+      alert("The total percentage must equal 100%.");
+      return;
+    }
+
+    // Save inputs to local storage
+    const budgetData = { amount, rent, accessories, emergency, saving };
+    localStorage.setItem("budgetData", JSON.stringify(budgetData));
+
+    $("#roomResult").text("Room Rent Rs." + (amount * rent / 100).toFixed(2));
+    $("#accessoriesResult").text("Accessories Rs." + (amount * accessories / 100).toFixed(2));
+    $("#emergencyResult").text("Emergency Rs." + (amount * emergency / 100).toFixed(2));
+    $("#savingResult").text("Saving Rs." + (amount * saving / 100).toFixed(2));
+  });
+});
+</script>
+</body>
+</html>
